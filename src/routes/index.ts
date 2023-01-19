@@ -3,9 +3,9 @@ import Controller from "../controllers/controller";
 
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+router.get("/info", async (_req, res) => {
   const controller = new Controller();
-  const response = await controller.getMessage();
+  const response = await controller.getInfo();
   return res.send(response);
 });
 
