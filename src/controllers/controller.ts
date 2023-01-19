@@ -1,4 +1,5 @@
 import { InfoResponse, AuthorResponse } from "./types";
+import { getAuthor } from "../repositories/author";
 
 export default class Controller {
   public async getInfo(): Promise<InfoResponse> {
@@ -7,11 +8,7 @@ export default class Controller {
     };
   }
 
-  public async getAuthor(): Promise<AuthorResponse> {
-    // Mock data from db
-    return {
-      authorId: 1,
-      name: "Charlie Chaplin",
-    };
+  public async getAuthor(): Promise<AuthorResponse[]> {
+    return getAuthor();
   }
 }
