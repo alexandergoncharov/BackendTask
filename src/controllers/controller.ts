@@ -1,11 +1,9 @@
-interface Response {
-  message: string;
-}
+import { InfoResponse } from "./types";
 
 export default class Controller {
-  public async getMessage(): Promise<Response> {
+  public async getInfo(): Promise<InfoResponse> {
     return {
-      message: "Hello world",
+      info: "Some information about the <b>company</b>.",
     };
   }
 }
