@@ -34,22 +34,18 @@ export const loginUser = async (
   const user = await userRepository.findOne({
     where: { email: userParams.email },
   });
-
   if (!user) {
     throw new Error("Wrong Email or Password");
   }
 
   const matches = bcrypt.compareSync(userParams.password, user.password);
-
   if (!matches) {
     throw new Error("Wrong Email or Password");
   }
 
   const uuid = uuidv4();
-
   await tokenRepository.insert({ token: uuid, user });
-
+  
   const tokenResponse: TokenResponse = { token: uuid };
-
   return tokenResponse;
 };
