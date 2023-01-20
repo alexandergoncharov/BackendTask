@@ -10,5 +10,9 @@ export interface AuthorResponse {
 export interface UserParams {
   email: string;
   password: string;
-  fullname: string;
+  fullname?: string;
+}
+
+export interface TokenResponse {
+  token: string;
 }

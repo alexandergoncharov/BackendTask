@@ -39,4 +39,27 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  if (email == null || password == null) {
+    return res.sendStatus(403);
+  }
+
+  const controller = new Controller();
+  try {
+    const token = await controller.loginUser({
+      email,
+      password,
+    });
+
+    return res.status(200).send(token);
+  } catch (error) {
+    let message = "Unknow Error";
+
+    if (error instanceof Error) message = error.message;
+
+    return res.status(400).send(message);
+  }
+});
+
 export default router;

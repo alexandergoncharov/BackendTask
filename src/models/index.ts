@@ -1,3 +1,4 @@
 import { Author } from "./author";
 import { User } from "./user";
-export { Author, User };
+import { Token } from "./token";
+export { Author, User, Token };
