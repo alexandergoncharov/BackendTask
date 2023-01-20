@@ -1,6 +1,11 @@
-import { InfoResponse, AuthorResponse, UserParams } from "./types";
+import {
+  InfoResponse,
+  AuthorResponse,
+  UserParams,
+  TokenResponse,
+} from "./types";
 import { getAuthor } from "../repositories/author";
-import { addUser } from "../repositories/user";
+import { addUser, loginUser } from "../repositories/user";
 import { User } from "../models/user";
 
 export default class Controller {
@@ -16,5 +21,9 @@ export default class Controller {
 
   public async registryUser(user: UserParams): Promise<User> {
     return addUser(user);
+  }
+
+  public async loginUser(user: UserParams): Promise<TokenResponse> {
+    return loginUser(user);
   }
 }
