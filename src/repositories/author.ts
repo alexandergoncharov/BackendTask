@@ -3,7 +3,7 @@ import { appDataSource } from "..";
 
 
 export const getAuthor = async (): Promise<Array<Author>> => {
-    const userRepository = appDataSource.getRepository(Author);
-    return userRepository.find();
+    const authorRepository = appDataSource.getRepository(Author);
+    return authorRepository.find();
   };
   

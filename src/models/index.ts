@@ -1,2 +1,3 @@
 import { Author } from "./author";
-export { Author };
+import { User } from "./user";
+export { Author, User };
