@@ -54,9 +54,8 @@ router.post("/login", async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const controller = new Controller();
   try {
-    const token = await controller.loginUser({
+    const token = await loginUser({
       email,
       password,
     });

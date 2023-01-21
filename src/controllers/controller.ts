@@ -9,10 +9,6 @@ import { addUser, loginUser, validateToken } from "../repositories/user";
 import { User } from "../models/user";
 
 export default class Controller {
-  public async loginUser(user: UserParams): Promise<TokenResponse> {
-    return loginUser(user);
-  }
-
   public async validateToken(token: string): Promise<User | null> {
     return validateToken(token);
   }
