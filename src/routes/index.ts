@@ -76,9 +76,8 @@ router.get("/profile", async (req, res) => {
     return res.sendStatus(401);
   }
 
-  const controller = new Controller();
   try {
-    const user: User | null = await controller.validateToken(token);
+    const user: User | null = await validateToken(token);
 
     if (!user) {
       return res.status(498).send("Wrong validation token");
