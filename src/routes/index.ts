@@ -1,14 +1,16 @@
 import express from "express";
 import Controller from "../controllers/controller";
-import { ProfileRespons } from "../controllers/types";
+import { InfoResponse, ProfileRespons } from "../controllers/types";
 import { User } from "../models/user";
 
 const router = express.Router();
 
+const infoMessage = "Some information about the <b>company</b>.";
+
 router.get("/info", async (req, res) => {
-  const controller = new Controller();
-  const response = await controller.getInfo();
-  return res.send(response);
+  const infoResponse: InfoResponse = { info: infoMessage };
+
+  return res.send(infoResponse);
 });
 
 router.get("/author", async (req, res) => {

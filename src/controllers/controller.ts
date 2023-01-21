@@ -9,12 +9,6 @@ import { addUser, loginUser, validateToken } from "../repositories/user";
 import { User } from "../models/user";
 
 export default class Controller {
-  public async getInfo(): Promise<InfoResponse> {
-    return {
-      info: "Some information about the <b>company</b>.",
-    };
-  }
-
   public async getAuthor(): Promise<AuthorResponse[]> {
     return getAuthor();
   }
