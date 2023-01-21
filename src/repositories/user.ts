@@ -1,6 +1,6 @@
 import { User, Token } from "../models";
 import { appDataSource } from "..";
-import { TokenResponse, UserParams } from "../controllers/types";
+import { TokenResponse, UserParams } from "../models/types";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 

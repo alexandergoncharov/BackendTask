@@ -1,10 +1,9 @@
 import express from "express";
-import Controller from "../controllers/controller";
 import {
   AuthorResponse,
   InfoResponse,
   ProfileRespons,
-} from "../controllers/types";
+} from "../models/types";
 import { User } from "../models/user";
 import { getAuthor } from "../repositories/author";
 import { addUser, loginUser, validateToken } from "../repositories/user";
