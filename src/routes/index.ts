@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  AuthorResponse,
-  InfoResponse,
-  ProfileRespons,
-} from "../models/types";
+import { AuthorResponse, InfoResponse, ProfileRespons } from "../models/types";
 import { User } from "../models/user";
 import { getAuthor } from "../repositories/author";
 import { addUser, loginUser, validateToken } from "../repositories/user";
@@ -39,10 +35,7 @@ router.post("/register", async (req, res) => {
 
     return res.sendStatus(200);
   } catch (error) {
-    let message = "Unknow Error";
-
-    if (error instanceof Error) message = error.message;
-
+    const message = handleErrorMessage(error as Error);
     res.status(400).send(message);
   }
 });
@@ -61,10 +54,7 @@ router.post("/login", async (req, res) => {
 
     return res.status(200).send(token);
   } catch (error) {
-    let message = "Unknow Error";
-
-    if (error instanceof Error) message = error.message;
-
+    const message = handleErrorMessage(error as Error);
     return res.status(400).send(message);
   }
 });
@@ -89,12 +79,17 @@ router.get("/profile", async (req, res) => {
 
     res.status(200).send(profileResponse);
   } catch (error) {
-    let message = "Unknow Error";
-
-    if (error instanceof Error) message = error.message;
-
+    const message = handleErrorMessage(error as Error);
     return res.status(400).send(message);
   }
 });
+
+const handleErrorMessage = (error: Error) => {
+  let message = "Unknow Error";
+
+  if (error instanceof Error) message = error.message;
+
+  return message;
+};
 
 export default router;
