@@ -16,3 +16,8 @@ export interface UserParams {
 export interface TokenResponse {
   token: string;
 }
+
+export interface ProfileRespons {
+  fullname: string;
+  email: string;
+}
