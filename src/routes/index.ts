@@ -1,7 +1,12 @@
 import express from "express";
 import Controller from "../controllers/controller";
-import { InfoResponse, ProfileRespons } from "../controllers/types";
+import {
+  AuthorResponse,
+  InfoResponse,
+  ProfileRespons,
+} from "../controllers/types";
 import { User } from "../models/user";
+import { getAuthor } from "../repositories/author";
 
 const router = express.Router();
 
@@ -14,8 +19,8 @@ router.get("/info", async (req, res) => {
 });
 
 router.get("/author", async (req, res) => {
-  const controller = new Controller();
-  const response = await controller.getAuthor();
+  const response: AuthorResponse[] = await getAuthor();
+
   return res.send(response);
 });
 
