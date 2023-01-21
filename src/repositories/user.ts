@@ -45,7 +45,22 @@ export const loginUser = async (
 
   const uuid = uuidv4();
   await tokenRepository.insert({ token: uuid, user });
-  
+
   const tokenResponse: TokenResponse = { token: uuid };
   return tokenResponse;
+};
+
+export const validateToken = async (token: string): Promise<User | null> => {
+  const tokenRepository = appDataSource.getRepository(Token);
+
+  const tokenObject = await tokenRepository.findOne({
+    relations: ["user"],
+    where: { token },
+  });
+
+  if (!tokenObject) {
+    return null;
+  }
+
+  return tokenObject.user;
 };
