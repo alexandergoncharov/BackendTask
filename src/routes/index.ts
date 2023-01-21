@@ -7,6 +7,7 @@ import {
 } from "../controllers/types";
 import { User } from "../models/user";
 import { getAuthor } from "../repositories/author";
+import { addUser, loginUser, validateToken } from "../repositories/user";
 
 const router = express.Router();
 
@@ -30,9 +31,8 @@ router.post("/register", async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const controller = new Controller();
   try {
-    await controller.registryUser({
+    await addUser({
       fullname,
       email,
       password,
