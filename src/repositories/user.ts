@@ -64,3 +64,9 @@ export const validateToken = async (token: string): Promise<User | null> => {
 
   return tokenObject.user;
 };
+
+export const deleteToken = async (token: string): Promise<void> => {
+  const tokenRepository = appDataSource.getRepository(Token);
+
+  await tokenRepository.delete({ token });
+};
