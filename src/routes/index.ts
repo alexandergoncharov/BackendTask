@@ -15,9 +15,24 @@ router.get("/info", async (req, res) => {
 });
 
 router.get("/author", async (req, res) => {
+  const token: string = req.query.token as string;
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
   try {
-    const response: AuthorResponse[] = await getAuthor();
-    return res.send(response);
+    const user: User | null = await validateToken(token);
+    if (!user) {
+      return res.status(498).send("Wrong validation token");
+    }
+
+    await delay(5000);
+
+    const authorList: AuthorResponse[] = await getAuthor();
+    const randomAuthorIndex: number = randomNumber(0, authorList.length - 1);
+    const randomAuthor: AuthorResponse = authorList[randomAuthorIndex];
+
+    return res.send(randomAuthor);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
     res.status(400).send(message);
@@ -94,6 +109,14 @@ const handleErrorMessage = (error: Error) => {
   if (error instanceof Error) message = error.message;
 
   return message;
+};
+
+const delay = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+const randomNumber = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 export default router;
