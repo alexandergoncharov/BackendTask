@@ -1,20 +1,27 @@
 import express from "express";
-import Controller from "../controllers/controller";
-import { ProfileRespons } from "../controllers/types";
+import { AuthorResponse, InfoResponse, ProfileRespons } from "../models/types";
 import { User } from "../models/user";
+import { getAuthor } from "../repositories/author";
+import { addUser, loginUser, validateToken } from "../repositories/user";
 
 const router = express.Router();
 
+const infoMessage = "Some information about the <b>company</b>.";
+
 router.get("/info", async (req, res) => {
-  const controller = new Controller();
-  const response = await controller.getInfo();
-  return res.send(response);
+  const infoResponse: InfoResponse = { info: infoMessage };
+
+  return res.send(infoResponse);
 });
 
 router.get("/author", async (req, res) => {
-  const controller = new Controller();
-  const response = await controller.getAuthor();
-  return res.send(response);
+  try {
+    const response: AuthorResponse[] = await getAuthor();
+    return res.send(response);
+  } catch (error) {
+    const message = handleErrorMessage(error as Error);
+    res.status(400).send(message);
+  }
 });
 
 router.post("/register", async (req, res) => {
@@ -23,9 +30,8 @@ router.post("/register", async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const controller = new Controller();
   try {
-    await controller.registryUser({
+    await addUser({
       fullname,
       email,
       password,
@@ -33,10 +39,7 @@ router.post("/register", async (req, res) => {
 
     return res.sendStatus(200);
   } catch (error) {
-    let message = "Unknow Error";
-
-    if (error instanceof Error) message = error.message;
-
+    const message = handleErrorMessage(error as Error);
     res.status(400).send(message);
   }
 });
@@ -47,19 +50,15 @@ router.post("/login", async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const controller = new Controller();
   try {
-    const token = await controller.loginUser({
+    const token = await loginUser({
       email,
       password,
     });
 
     return res.status(200).send(token);
   } catch (error) {
-    let message = "Unknow Error";
-
-    if (error instanceof Error) message = error.message;
-
+    const message = handleErrorMessage(error as Error);
     return res.status(400).send(message);
   }
 });
@@ -70,9 +69,8 @@ router.get("/profile", async (req, res) => {
     return res.sendStatus(401);
   }
 
-  const controller = new Controller();
   try {
-    const user: User | null = await controller.validateToken(token);
+    const user: User | null = await validateToken(token);
 
     if (!user) {
       return res.status(498).send("Wrong validation token");
@@ -85,12 +83,17 @@ router.get("/profile", async (req, res) => {
 
     res.status(200).send(profileResponse);
   } catch (error) {
-    let message = "Unknow Error";
-
-    if (error instanceof Error) message = error.message;
-
+    const message = handleErrorMessage(error as Error);
     return res.status(400).send(message);
   }
 });
+
+const handleErrorMessage = (error: Error) => {
+  let message = "Unknow Error";
+
+  if (error instanceof Error) message = error.message;
+
+  return message;
+};
 
 export default router;
