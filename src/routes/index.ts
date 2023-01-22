@@ -15,9 +15,13 @@ router.get("/info", async (req, res) => {
 });
 
 router.get("/author", async (req, res) => {
-  const response: AuthorResponse[] = await getAuthor();
-
-  return res.send(response);
+  try {
+    const response: AuthorResponse[] = await getAuthor();
+    return res.send(response);
+  } catch (error) {
+    const message = handleErrorMessage(error as Error);
+    res.status(400).send(message);
+  }
 });
 
 router.post("/register", async (req, res) => {
