@@ -1,7 +1,14 @@
 import express from "express";
-import { AuthorResponse, InfoResponse, ProfileRespons } from "../models/types";
+import { Quote } from "../models";
+import {
+  AuthorResponse,
+  InfoResponse,
+  ProfileRespons,
+  QuoteRepsonse,
+} from "../models/types";
 import { User } from "../models/user";
 import { getAuthor } from "../repositories/author";
+import { getQuotes } from "../repositories/quote";
 import { addUser, loginUser, validateToken } from "../repositories/user";
 
 const router = express.Router();
@@ -33,6 +40,44 @@ router.get("/author", async (req, res) => {
     const randomAuthor: AuthorResponse = authorList[randomAuthorIndex];
 
     return res.send(randomAuthor);
+  } catch (error) {
+    const message = handleErrorMessage(error as Error);
+    res.status(400).send(message);
+  }
+});
+
+router.get("/quote", async (req, res) => {
+  const token: string = req.query.token as string;
+  const authorId: number = parseInt(req.query.authorId as string);
+  if (!token) {
+    return res.sendStatus(401);
+  }
+  if (!authorId) {
+    return res.sendStatus(404);
+  }
+
+  try {
+    const user: User | null = await validateToken(token);
+    if (!user) {
+      return res.status(498).send("Wrong validation token");
+    }
+
+    await delay(5000);
+
+    const quoteList = await getQuotes(authorId);
+    if (quoteList.length === 0) {
+      return res.send([]);
+    }
+
+    const randomQuoteIndex: number = randomNumber(0, quoteList.length - 1);
+    const randomQuote: Quote = quoteList[randomQuoteIndex];
+    const quoteRepsonse: QuoteRepsonse = {
+      authorId: randomQuote.author.authorId,
+      quoteId: randomQuote.quoteId,
+      quote: randomQuote.quote,
+    };
+
+    return res.send(quoteRepsonse);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
     res.status(400).send(message);

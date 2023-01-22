@@ -21,3 +21,9 @@ export interface ProfileRespons {
   fullname: string;
   email: string;
 }
+
+export interface QuoteRepsonse {
+  authorId: number;
+  quoteId: number;
+  quote: string;
+}
