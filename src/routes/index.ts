@@ -9,7 +9,7 @@ import {
 import { User } from "../models/user";
 import { getAuthor } from "../repositories/author";
 import { getQuotes } from "../repositories/quote";
-import { addUser, loginUser, validateToken } from "../repositories/user";
+import { addUser, deleteToken, loginUser, validateToken } from "../repositories/user";
 
 const router = express.Router();
 
@@ -142,6 +142,27 @@ router.get("/profile", async (req, res) => {
     };
 
     res.status(200).send(profileResponse);
+  } catch (error) {
+    const message = handleErrorMessage(error as Error);
+    return res.status(400).send(message);
+  }
+});
+
+router.delete("/logout", async (req, res) => {
+  const token: string = req.query.token as string;
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  try {
+    const user: User | null = await validateToken(token);
+    if (!user) {
+      return res.status(498).send("Wrong validation token");
+    }
+
+    await deleteToken(token);
+
+    res.sendStatus(200);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
     return res.status(400).send(message);
