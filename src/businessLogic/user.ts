@@ -7,7 +7,10 @@ import { getUser, insertUser } from "../repositories/user";
 import { insertToken } from "../repositories/token";
 
 export const addUser = async (user: UserParams) => {
-  await insertUser(user);
+  const encryptedUser: UserParams = { ...user };
+  encryptedUser.password = bcrypt.hashSync(user.password, 10);
+
+  await insertUser(encryptedUser);
 };
 
 export const loginUser = async (userParams: LoginParams): Promise<string> => {
@@ -22,7 +25,6 @@ export const loginUser = async (userParams: LoginParams): Promise<string> => {
   }
 
   const token = uuidv4();
-
   await insertToken(token, user);
 
   return token;
