@@ -5,6 +5,12 @@ import { logout, validateToken } from "../businessLogic/token";
 import { addUser, loginUser } from "../businessLogic/user";
 import { Author, Quote } from "../models";
 import {
+  delayMs,
+  StatusCode,
+  unknowError,
+  validationErrorMessage,
+} from "../models/const";
+import {
   AuthorResponse,
   InfoResponse,
   ProfileRespons,
@@ -25,16 +31,16 @@ router.get("/info", async (req, res) => {
 router.get("/author", async (req, res) => {
   const token: string = req.query.token as string;
   if (!token) {
-    return res.sendStatus(401);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
 
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
     }
 
-    await delay(5000);
+    await delay(delayMs);
 
     const author: Author = await getRandomAuthor();
     const responseAuthor: AuthorResponse = {
@@ -45,7 +51,7 @@ router.get("/author", async (req, res) => {
     return res.send(responseAuthor);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    res.status(400).send(message);
+    res.status(StatusCode.BadRequest).send(message);
   }
 });
 
@@ -53,19 +59,19 @@ router.get("/quote", async (req, res) => {
   const token: string = req.query.token as string;
   const authorId: number = parseInt(req.query.authorId as string);
   if (!token) {
-    return res.sendStatus(401);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
   if (!authorId) {
-    return res.sendStatus(404);
+    return res.sendStatus(StatusCode.NotFound);
   }
 
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
     }
 
-    await delay(5000);
+    await delay(delayMs);
 
     const quote: Quote = await getRandomQuote(authorId);
     const quoteRepsonse: QuoteRepsonse = {
@@ -77,14 +83,14 @@ router.get("/quote", async (req, res) => {
     return res.send(quoteRepsonse);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    res.status(400).send(message);
+    res.status(StatusCode.BadRequest).send(message);
   }
 });
 
 router.post("/register", async (req, res) => {
   const { fullname, email, password } = req.body;
   if (fullname == null || email == null || password == null) {
-    return res.sendStatus(403);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
 
   try {
@@ -94,17 +100,17 @@ router.post("/register", async (req, res) => {
       password,
     });
 
-    return res.sendStatus(200);
+    return res.sendStatus(StatusCode.Successful);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (email == null || password == null) {
-    return res.sendStatus(403);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
 
   try {
@@ -113,10 +119,10 @@ router.post("/login", async (req, res) => {
       password,
     });
 
-    return res.status(200).send(token);
+    return res.status(StatusCode.Successful).send(token);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
@@ -130,7 +136,7 @@ router.get("/profile", async (req, res) => {
     const user: User | null = await validateToken(token);
 
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(403).send(validationErrorMessage);
     }
 
     const profileResponse: ProfileRespons = {
@@ -138,10 +144,10 @@ router.get("/profile", async (req, res) => {
       email: user.email,
     };
 
-    res.status(200).send(profileResponse);
+    res.status(StatusCode.Successful).send(profileResponse);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
@@ -154,21 +160,20 @@ router.delete("/logout", async (req, res) => {
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(403).send(validationErrorMessage);
     }
 
     await logout(token);
 
-    res.sendStatus(200);
+    res.sendStatus(StatusCode.Successful);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
 const handleErrorMessage = (error: Error) => {
-  let message = "Unknow Error";
-
+  let message = unknowError;
   if (error instanceof Error) message = error.message;
 
   return message;

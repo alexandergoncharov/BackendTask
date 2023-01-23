@@ -1,5 +1,4 @@
 import { Author } from "../models";
-import { appDataSource } from "..";
 import { getAuthors } from "../repositories/author";
 import { randomNumber } from "./utils";
 
