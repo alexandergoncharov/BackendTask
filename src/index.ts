@@ -16,6 +16,7 @@ app.use(express.static("public"));
 app.use(Router);
 
 export const appDataSource = new DataSource(dbConfig);
+export const server = app;
 
 appDataSource
   .initialize()
