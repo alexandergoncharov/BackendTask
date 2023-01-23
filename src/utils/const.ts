@@ -1,6 +1,7 @@
 export const validationErrorMessage: string = "Wrong validation token";
 export const unknowError: string = "Unknow Error";
 export const wrongEmailOrPassword: string = "Wrong Email or Password";
+export const infoMessage = "Some information about the <b>company</b>.";
 
 export const delayMs: number = 5000;
 

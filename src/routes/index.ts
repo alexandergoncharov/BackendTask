@@ -6,6 +6,7 @@ import { addUser, loginUser } from "../businessLogic/user";
 import { Author, Quote } from "../models";
 import {
   delayMs,
+  infoMessage,
   StatusCode,
   unknowError,
   validationErrorMessage,
@@ -24,8 +25,6 @@ import {
 } from "../utils/convertor";
 
 const router = express.Router();
-
-const infoMessage = "Some information about the <b>company</b>.";
 
 router.get("/info", async (req, res) => {
   const infoResponse: InfoResponse = { info: infoMessage };
