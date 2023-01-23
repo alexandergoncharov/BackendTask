@@ -1,5 +1,9 @@
 import express from "express";
-import { Quote } from "../models";
+import { getRandomAuthor } from "../businessLogic/author";
+import { getRandomQuote } from "../businessLogic/quote";
+import { logout, validateToken } from "../businessLogic/token";
+import { addUser, loginUser } from "../businessLogic/user";
+import { Author, Quote } from "../models";
 import {
   AuthorResponse,
   InfoResponse,
@@ -7,9 +11,6 @@ import {
   QuoteRepsonse,
 } from "../models/types";
 import { User } from "../models/user";
-import { getAuthor } from "../repositories/author";
-import { getQuotes } from "../repositories/quote";
-import { addUser, deleteToken, loginUser, validateToken } from "../repositories/user";
 
 const router = express.Router();
 
@@ -35,11 +36,13 @@ router.get("/author", async (req, res) => {
 
     await delay(5000);
 
-    const authorList: AuthorResponse[] = await getAuthor();
-    const randomAuthorIndex: number = randomNumber(0, authorList.length - 1);
-    const randomAuthor: AuthorResponse = authorList[randomAuthorIndex];
+    const author: Author = await getRandomAuthor();
+    const responseAuthor: AuthorResponse = {
+      authorId: author.authorId,
+      name: author.name,
+    };
 
-    return res.send(randomAuthor);
+    return res.send(responseAuthor);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
     res.status(400).send(message);
@@ -64,17 +67,11 @@ router.get("/quote", async (req, res) => {
 
     await delay(5000);
 
-    const quoteList = await getQuotes(authorId);
-    if (quoteList.length === 0) {
-      return res.send([]);
-    }
-
-    const randomQuoteIndex: number = randomNumber(0, quoteList.length - 1);
-    const randomQuote: Quote = quoteList[randomQuoteIndex];
+    const quote: Quote = await getRandomQuote(authorId);
     const quoteRepsonse: QuoteRepsonse = {
-      authorId: randomQuote.author.authorId,
-      quoteId: randomQuote.quoteId,
-      quote: randomQuote.quote,
+      authorId: quote.author.authorId,
+      quoteId: quote.quoteId,
+      quote: quote.quote,
     };
 
     return res.send(quoteRepsonse);
@@ -100,7 +97,7 @@ router.post("/register", async (req, res) => {
     return res.sendStatus(200);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    res.status(400).send(message);
+    return res.status(400).send(message);
   }
 });
 
@@ -160,7 +157,7 @@ router.delete("/logout", async (req, res) => {
       return res.status(498).send("Wrong validation token");
     }
 
-    await deleteToken(token);
+    await logout(token);
 
     res.sendStatus(200);
   } catch (error) {
@@ -179,10 +176,6 @@ const handleErrorMessage = (error: Error) => {
 
 const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-const randomNumber = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 export default router;
