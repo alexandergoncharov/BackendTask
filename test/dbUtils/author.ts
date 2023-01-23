@@ -13,10 +13,13 @@ export const createAuthor = async (): Promise<Author> => {
     name: "testName" + uuidv4(), // For uniq name
   };
 
-  const insertResult = await authorRepository.insert(authorParams);
-  const author: Author = insertResult.raw;
+  await authorRepository.insert(authorParams);
 
-  return author;
+  const author: Author | null = await authorRepository.findOne({
+    where: { name: authorParams.name },
+  });
+
+  return author!;
 };
 
 export const deleteAuthor = async (author: Author): Promise<void> => {

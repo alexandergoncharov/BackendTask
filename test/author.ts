@@ -46,7 +46,7 @@ describe("Author api", () => {
 
         const isAuthorExists = allAuthors.some(
           (author) =>
-            author.authorId === responseAuthor.authorId &&
+            author.id === responseAuthor.authorId &&
             author.name === responseAuthor.name
         );
 

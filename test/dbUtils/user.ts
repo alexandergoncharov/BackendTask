@@ -14,8 +14,7 @@ export const createUser = async (): Promise<User> => {
   };
 
   const userRepository = appDataSource.getRepository(User);
-  const insertResult = await userRepository.insert(userParams);
-  const id: number = insertResult.raw;
+  await userRepository.insert(userParams);
 
   const user: User | null = await userRepository.findOne({
     where: { email: userParams.email },

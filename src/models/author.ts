@@ -7,7 +7,7 @@ import {
   @Entity()
   export class Author {
     @PrimaryGeneratedColumn()
-    authorId!: number;
+    id!: number;
   
     @Column()
     name!: string;
