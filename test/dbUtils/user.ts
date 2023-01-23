@@ -40,6 +40,14 @@ export const getUserByEmail = async (email: string) => {
   return user!;
 };
 
+export const getToken = async (user: User): Promise<Token | null> => {
+  const tokenRepository = appDataSource.getRepository(Token);
+
+  const token = await tokenRepository.findOne({ where: { user } });
+
+  return token;
+};
+
 export const deleteUser = async (user: User): Promise<void> => {
   const userRepository = appDataSource.getRepository(User);
   await userRepository.delete({ id: user.id });

@@ -9,6 +9,7 @@ import {
   createUser,
   createUserToken,
   deleteUser,
+  getToken,
   getUserByEmail,
 } from "./dbUtils/user";
 
@@ -97,13 +98,39 @@ describe("User api", () => {
         await deleteUser(user);
       });
 
-      it("should return user profile data", async () => {
-        const profileResponse = await app
-          .get(`/profile?token=${token}`)
-          .expect(200);
+      it("should return user profile ", async () => {
+        const response = await app.get(`/profile?token=${token}`).expect(200);
 
-        expect(profileResponse.body.fullname).to.equal(user.fullname);
-        expect(profileResponse.body.email).to.equal(user.email);
+        expect(response.body.fullname).to.equal(user.fullname);
+        expect(response.body.email).to.equal(user.email);
+      });
+    });
+  });
+
+  describe("/logout", () => {
+    it("should return 401 if token is missed", async () => {
+      await app.delete("/logout").expect(401);
+    });
+
+    describe("for authorized users", async () => {
+      let token: string;
+      let user: User;
+
+      before(async () => {
+        user = await createUser();
+        token = await createUserToken(user);
+      });
+
+      after(async () => {
+        await deleteToken(token);
+        await deleteUser(user);
+      });
+
+      it("should remove user token", async () => {
+        await app.delete(`/logout?token=${token}`).expect(200);
+        const deletedToken = await getToken(user);
+
+        expect(deletedToken).to.not.exist;
       });
     });
   });
