@@ -4,6 +4,7 @@ import { User } from "../models";
 import { wrongEmailOrPassword } from "../utils/const";
 import { LoginParams, UserParams } from "../utils/types";
 import { getUser, insertUser } from "../repositories/user";
+import { insertToken } from "../repositories/token";
 
 export const addUser = async (user: UserParams) => {
   await insertUser(user);
@@ -21,13 +22,8 @@ export const loginUser = async (userParams: LoginParams): Promise<string> => {
   }
 
   const token = uuidv4();
-  const encruptedPassword: string = bcrypt.hashSync(token, 10);
-  const passwordEncryptedUser: UserParams = {
-    ...user,
-    password: encruptedPassword,
-  };
 
-  await insertUser(passwordEncryptedUser);
+  await insertToken(token, user);
 
   return token;
 };
