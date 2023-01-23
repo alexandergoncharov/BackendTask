@@ -7,6 +7,7 @@ import { UserParams } from "../src/utils/types";
 import { createAuthor, deleteAuthor, getAllAuthors } from "./dbUtils/author";
 import {
   createUser,
+  createUserToken,
   deleteUser,
   getUserByEmail,
 } from "./dbUtils/user";
@@ -68,8 +69,42 @@ describe("User api", () => {
       expect(token).to.exist;
 
       await app.get(`/profile?token=${token}`).expect(200);
-      
+
       await deleteToken(token);
+    });
+  });
+
+  describe("/profile", () => {
+    it("should return 401 if token is missed", async () => {
+      await app.get("/profile").expect(401);
+    });
+
+    it("should return 401 if token is invalid", async () => {
+      await app.get("/profile?token=invalidToken").expect(403);
+    });
+
+    describe("authorized", async () => {
+      let token: string;
+      let user: User;
+
+      before(async () => {
+        user = await createUser();
+        token = await createUserToken(user);
+      });
+
+      after(async () => {
+        await deleteToken(token);
+        await deleteUser(user);
+      });
+
+      it("should return user profile data", async () => {
+        const profileResponse = await app
+          .get(`/profile?token=${token}`)
+          .expect(200);
+
+        expect(profileResponse.body.fullname).to.equal(user.fullname);
+        expect(profileResponse.body.email).to.equal(user.email);
+      });
     });
   });
 });
