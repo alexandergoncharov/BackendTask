@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { User } from "../models";
-import { wrongEmailOrPassword } from "../models/const";
-import { LoginParams, UserParams } from "../models/types";
+import { wrongEmailOrPassword } from "../utils/const";
+import { LoginParams, UserParams } from "../utils/types";
 import { getUser, insertUser } from "../repositories/user";
 
 export const addUser = async (user: UserParams) => {

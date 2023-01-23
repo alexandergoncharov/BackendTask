@@ -1,6 +1,6 @@
 import { Quote } from "../models";
 import { getQuotes } from "../repositories/quote";
-import { randomNumber } from "./utils";
+import { randomNumber } from "../utils/utils";
 
 export const getRandomQuote = async (authorId: number): Promise<Quote> => {
   const quoteList = await getQuotes(authorId);

@@ -9,14 +9,19 @@ import {
   StatusCode,
   unknowError,
   validationErrorMessage,
-} from "../models/const";
+} from "../utils/const";
 import {
   AuthorResponse,
   InfoResponse,
   ProfileRespons,
   QuoteRepsonse,
-} from "../models/types";
+} from "../utils/types";
 import { User } from "../models/user";
+import {
+  toAuthtorResponse,
+  toProfileResponse,
+  toQuoteRepsonse,
+} from "../utils/convertor";
 
 const router = express.Router();
 
@@ -43,10 +48,7 @@ router.get("/author", async (req, res) => {
     await delay(delayMs);
 
     const author: Author = await getRandomAuthor();
-    const responseAuthor: AuthorResponse = {
-      authorId: author.authorId,
-      name: author.name,
-    };
+    const responseAuthor: AuthorResponse = toAuthtorResponse(author);
 
     return res.send(responseAuthor);
   } catch (error) {
@@ -74,11 +76,7 @@ router.get("/quote", async (req, res) => {
     await delay(delayMs);
 
     const quote: Quote = await getRandomQuote(authorId);
-    const quoteRepsonse: QuoteRepsonse = {
-      authorId: quote.author.authorId,
-      quoteId: quote.quoteId,
-      quote: quote.quote,
-    };
+    const quoteRepsonse: QuoteRepsonse = toQuoteRepsonse(quote);
 
     return res.send(quoteRepsonse);
   } catch (error) {
@@ -139,10 +137,7 @@ router.get("/profile", async (req, res) => {
       return res.status(403).send(validationErrorMessage);
     }
 
-    const profileResponse: ProfileRespons = {
-      fullname: user.fullname,
-      email: user.email,
-    };
+    const profileResponse: ProfileRespons = toProfileResponse(user);
 
     res.status(StatusCode.Successful).send(profileResponse);
   } catch (error) {

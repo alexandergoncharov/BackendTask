@@ -1,6 +1,6 @@
 import { Author } from "../models";
 import { getAuthors } from "../repositories/author";
-import { randomNumber } from "./utils";
+import { randomNumber } from "../utils/utils";
 
 export const getRandomAuthor = async (): Promise<Author> => {
   const authorList: Author[] = await getAuthors();

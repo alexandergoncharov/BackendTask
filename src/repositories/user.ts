@@ -1,6 +1,6 @@
 import { User } from "../models";
 import { appDataSource } from "..";
-import { UserParams } from "../models/types";
+import { UserParams } from "../utils/types";
 
 export const insertUser = async (user: UserParams): Promise<User> => {
   const userRepository = appDataSource.getRepository(User);
