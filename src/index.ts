@@ -1,6 +1,9 @@
 import express, { Application } from "express";
 import morgan from "morgan";
 import Router from "./routes";
+import dbConfig from "./config/database";
+import { DataSource } from "typeorm";
+import "reflect-metadata";
 
 const PORT = process.env.PORT || 8000;
 
@@ -12,6 +15,16 @@ app.use(express.static("public"));
 
 app.use(Router);
 
-app.listen(PORT, () => {
-  console.log("Server is running on port", PORT);
-});
+export const appDataSource = new DataSource(dbConfig);
+
+appDataSource
+  .initialize()
+  .then((_connection) => {
+    app.listen(PORT, () => {
+      console.log("Server is running on port", PORT);
+    });
+  })
+  .catch((err) => {
+    console.log("Unable to connect to db", err);
+    process.exit(1);
+  });
