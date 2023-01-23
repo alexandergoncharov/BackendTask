@@ -1,15 +1,27 @@
 import express from "express";
-import { Quote } from "../models";
+import { getRandomAuthor } from "../businessLogic/author";
+import { getRandomQuote } from "../businessLogic/quote";
+import { logout, validateToken } from "../businessLogic/token";
+import { addUser, loginUser } from "../businessLogic/user";
+import { Author, Quote } from "../models";
+import {
+  delayMs,
+  StatusCode,
+  unknowError,
+  validationErrorMessage,
+} from "../utils/const";
 import {
   AuthorResponse,
   InfoResponse,
   ProfileRespons,
   QuoteRepsonse,
-} from "../models/types";
+} from "../utils/types";
 import { User } from "../models/user";
-import { getAuthor } from "../repositories/author";
-import { getQuotes } from "../repositories/quote";
-import { addUser, deleteToken, loginUser, validateToken } from "../repositories/user";
+import {
+  toAuthtorResponse,
+  toProfileResponse,
+  toQuoteRepsonse,
+} from "../utils/convertor";
 
 const router = express.Router();
 
@@ -24,25 +36,24 @@ router.get("/info", async (req, res) => {
 router.get("/author", async (req, res) => {
   const token: string = req.query.token as string;
   if (!token) {
-    return res.sendStatus(401);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
 
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
     }
 
-    await delay(5000);
+    await delay(delayMs);
 
-    const authorList: AuthorResponse[] = await getAuthor();
-    const randomAuthorIndex: number = randomNumber(0, authorList.length - 1);
-    const randomAuthor: AuthorResponse = authorList[randomAuthorIndex];
+    const author: Author = await getRandomAuthor();
+    const responseAuthor: AuthorResponse = toAuthtorResponse(author);
 
-    return res.send(randomAuthor);
+    return res.send(responseAuthor);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    res.status(400).send(message);
+    res.status(StatusCode.BadRequest).send(message);
   }
 });
 
@@ -50,44 +61,34 @@ router.get("/quote", async (req, res) => {
   const token: string = req.query.token as string;
   const authorId: number = parseInt(req.query.authorId as string);
   if (!token) {
-    return res.sendStatus(401);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
   if (!authorId) {
-    return res.sendStatus(404);
+    return res.sendStatus(StatusCode.NotFound);
   }
 
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
     }
 
-    await delay(5000);
+    await delay(delayMs);
 
-    const quoteList = await getQuotes(authorId);
-    if (quoteList.length === 0) {
-      return res.send([]);
-    }
-
-    const randomQuoteIndex: number = randomNumber(0, quoteList.length - 1);
-    const randomQuote: Quote = quoteList[randomQuoteIndex];
-    const quoteRepsonse: QuoteRepsonse = {
-      authorId: randomQuote.author.authorId,
-      quoteId: randomQuote.quoteId,
-      quote: randomQuote.quote,
-    };
+    const quote: Quote = await getRandomQuote(authorId);
+    const quoteRepsonse: QuoteRepsonse = toQuoteRepsonse(quote);
 
     return res.send(quoteRepsonse);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    res.status(400).send(message);
+    res.status(StatusCode.BadRequest).send(message);
   }
 });
 
 router.post("/register", async (req, res) => {
   const { fullname, email, password } = req.body;
   if (fullname == null || email == null || password == null) {
-    return res.sendStatus(403);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
 
   try {
@@ -97,17 +98,17 @@ router.post("/register", async (req, res) => {
       password,
     });
 
-    return res.sendStatus(200);
+    return res.sendStatus(StatusCode.Successful);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (email == null || password == null) {
-    return res.sendStatus(403);
+    return res.sendStatus(StatusCode.Unauthorized);
   }
 
   try {
@@ -116,10 +117,10 @@ router.post("/login", async (req, res) => {
       password,
     });
 
-    return res.status(200).send(token);
+    return res.status(StatusCode.Successful).send(token);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
@@ -133,18 +134,15 @@ router.get("/profile", async (req, res) => {
     const user: User | null = await validateToken(token);
 
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(403).send(validationErrorMessage);
     }
 
-    const profileResponse: ProfileRespons = {
-      fullname: user.fullname,
-      email: user.email,
-    };
+    const profileResponse: ProfileRespons = toProfileResponse(user);
 
-    res.status(200).send(profileResponse);
+    res.status(StatusCode.Successful).send(profileResponse);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
@@ -157,21 +155,20 @@ router.delete("/logout", async (req, res) => {
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(498).send("Wrong validation token");
+      return res.status(403).send(validationErrorMessage);
     }
 
-    await deleteToken(token);
+    await logout(token);
 
-    res.sendStatus(200);
+    res.sendStatus(StatusCode.Successful);
   } catch (error) {
     const message = handleErrorMessage(error as Error);
-    return res.status(400).send(message);
+    return res.status(StatusCode.BadRequest).send(message);
   }
 });
 
 const handleErrorMessage = (error: Error) => {
-  let message = "Unknow Error";
-
+  let message = unknowError;
   if (error instanceof Error) message = error.message;
 
   return message;
@@ -179,10 +176,6 @@ const handleErrorMessage = (error: Error) => {
 
 const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-const randomNumber = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 export default router;

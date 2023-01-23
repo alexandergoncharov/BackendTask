@@ -7,10 +7,13 @@ export interface AuthorResponse {
   name: string;
 }
 
-export interface UserParams {
+export interface LoginParams {
   email: string;
   password: string;
-  fullname?: string;
+}
+
+export interface UserParams extends LoginParams {
+  fullname: string;
 }
 
 export interface TokenResponse {
