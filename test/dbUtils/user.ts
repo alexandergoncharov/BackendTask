@@ -32,6 +32,14 @@ export const createUserToken = async (user: User): Promise<string> => {
   return token;
 };
 
+export const getUserByEmail = async (email: string) => {
+  const userRepository = appDataSource.getRepository(User);
+
+  const user: User | null = await userRepository.findOne({ where: { email } });
+
+  return user!;
+};
+
 export const deleteUser = async (user: User): Promise<void> => {
   const userRepository = appDataSource.getRepository(User);
   await userRepository.delete({ id: user.id });

@@ -69,7 +69,6 @@ router.get("/quote", async (req, res) => {
 
   try {
     const user: User | null = await validateToken(token);
-    console.log(user);
     if (!user) {
       return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
     }

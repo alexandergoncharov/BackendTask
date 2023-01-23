@@ -45,10 +45,6 @@ describe("Author api", () => {
       const quote1 = await createQuote(author);
       const quote2 = await createQuote(author);
 
-      console.log(author);
-      console.log(quote1);
-      console.log(quote2);
-
       try {
         const response = await app
           .get(`/quote?token=${token}&authorId=${author.id}`)
