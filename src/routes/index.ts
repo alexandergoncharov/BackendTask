@@ -6,6 +6,7 @@ import { addUser, loginUser } from "../businessLogic/user";
 import { Author, Quote } from "../models";
 import {
   delayMs,
+  duplicateEmailError,
   infoMessage,
   StatusCode,
   unknowError,
@@ -51,8 +52,8 @@ router.get("/author", async (req, res) => {
 
     return res.send(responseAuthor);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -79,8 +80,8 @@ router.get("/quote", async (req, res) => {
 
     return res.send(quoteRepsonse);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -99,8 +100,8 @@ router.post("/register", async (req, res) => {
 
     return res.sendStatus(StatusCode.Successful);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -118,8 +119,8 @@ router.post("/login", async (req, res) => {
 
     return res.status(StatusCode.Successful).send(token);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -140,8 +141,8 @@ router.get("/profile", async (req, res) => {
 
     res.status(StatusCode.Successful).send(profileResponse);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -161,16 +162,21 @@ router.delete("/logout", async (req, res) => {
 
     res.sendStatus(StatusCode.Successful);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
 const handleErrorMessage = (error: Error) => {
   let message = unknowError;
+  let statusCode = StatusCode.BadRequest;
+
   if (error instanceof Error) message = error.message;
 
-  return message;
+  if (error instanceof Error && error.message === duplicateEmailError)
+    statusCode = StatusCode.Duplicated;
+
+  return { message, statusCode };
 };
 
 const delay = (ms: number) => {
