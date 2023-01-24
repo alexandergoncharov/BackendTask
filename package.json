@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon",
-    "test": "ts-mocha test/*.ts"
+    "test": "ts-mocha test/*.ts --recursive"
   },
   "nodemonConfig": {
     "watch": [
