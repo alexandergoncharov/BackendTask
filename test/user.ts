@@ -8,6 +8,7 @@ import { createAuthor, deleteAuthor, getAllAuthors } from "./dbUtils/author";
 import {
   createUser,
   createUserToken,
+  decryptedPassword,
   deleteUser,
   getToken,
   getUserByEmail,
@@ -60,7 +61,7 @@ describe("User api", () => {
     it("should return token when credentials are valid", async () => {
       const loginResponse = await app
         .post("/login")
-        .send({ email: testUser.email, password: "123" })
+        .send({ email: testUser.email, password: decryptedPassword })
         .expect(200);
 
       console.log(loginResponse.body);
@@ -84,7 +85,7 @@ describe("User api", () => {
       await app.get("/profile?token=invalidToken").expect(403);
     });
 
-    describe("authorized", async () => {
+    describe("for authorized users", async () => {
       let token: string;
       let user: User;
 

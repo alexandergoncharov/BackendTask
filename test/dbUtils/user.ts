@@ -4,8 +4,10 @@ import { appDataSource } from "../../src";
 import { Token, User } from "../../src/models";
 import { UserParams } from "../../src/utils/types";
 
+export const decryptedPassword = "123";
+
 export const createUser = async (): Promise<User> => {
-  const password: string = "123";
+  const password: string = decryptedPassword;
   const ecryptedPassword: string = bcrypt.hashSync(password, 10);
   const userParams: UserParams = {
     fullname: "testFullName",
