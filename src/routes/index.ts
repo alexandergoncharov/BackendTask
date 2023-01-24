@@ -5,10 +5,12 @@ import { logout, validateToken } from "../businessLogic/token";
 import { addUser, loginUser } from "../businessLogic/user";
 import { Author, Quote } from "../models";
 import {
-  delayMs,
+  DELAY_IN_MS,
+  DUPLICATED_EMAIL_ERROR,
+  INFO_MESSAGE,
   StatusCode,
-  unknowError,
-  validationErrorMessage,
+  UNKNOW_ERROR,
+  VALIDATION_ERROR,
 } from "../utils/const";
 import {
   AuthorResponse,
@@ -25,10 +27,8 @@ import {
 
 const router = express.Router();
 
-const infoMessage = "Some information about the <b>company</b>.";
-
 router.get("/info", async (req, res) => {
-  const infoResponse: InfoResponse = { info: infoMessage };
+  const infoResponse: InfoResponse = { info: INFO_MESSAGE };
 
   return res.send(infoResponse);
 });
@@ -42,18 +42,18 @@ router.get("/author", async (req, res) => {
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
+      return res.status(StatusCode.Unauthorized).send(VALIDATION_ERROR);
     }
 
-    await delay(delayMs);
+    await delay(DELAY_IN_MS);
 
     const author: Author = await getRandomAuthor();
     const responseAuthor: AuthorResponse = toAuthtorResponse(author);
 
     return res.send(responseAuthor);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -70,18 +70,18 @@ router.get("/quote", async (req, res) => {
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(StatusCode.Unauthorized).send(validationErrorMessage);
+      return res.status(StatusCode.Unauthorized).send(VALIDATION_ERROR);
     }
 
-    await delay(delayMs);
+    await delay(DELAY_IN_MS);
 
     const quote: Quote = await getRandomQuote(authorId);
     const quoteRepsonse: QuoteRepsonse = toQuoteRepsonse(quote);
 
     return res.send(quoteRepsonse);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -100,8 +100,8 @@ router.post("/register", async (req, res) => {
 
     return res.sendStatus(StatusCode.Successful);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -117,10 +117,10 @@ router.post("/login", async (req, res) => {
       password,
     });
 
-    return res.status(StatusCode.Successful).send(token);
+    return res.status(StatusCode.Successful).send({ token });
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -134,15 +134,15 @@ router.get("/profile", async (req, res) => {
     const user: User | null = await validateToken(token);
 
     if (!user) {
-      return res.status(403).send(validationErrorMessage);
+      return res.status(403).send(VALIDATION_ERROR);
     }
 
     const profileResponse: ProfileRespons = toProfileResponse(user);
 
     res.status(StatusCode.Successful).send(profileResponse);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
@@ -155,23 +155,28 @@ router.delete("/logout", async (req, res) => {
   try {
     const user: User | null = await validateToken(token);
     if (!user) {
-      return res.status(403).send(validationErrorMessage);
+      return res.status(403).send(VALIDATION_ERROR);
     }
 
     await logout(token);
 
     res.sendStatus(StatusCode.Successful);
   } catch (error) {
-    const message = handleErrorMessage(error as Error);
-    return res.status(StatusCode.BadRequest).send(message);
+    const { message, statusCode } = handleErrorMessage(error as Error);
+    return res.status(statusCode).send(message);
   }
 });
 
 const handleErrorMessage = (error: Error) => {
-  let message = unknowError;
+  let message = UNKNOW_ERROR;
+  let statusCode = StatusCode.BadRequest;
+
   if (error instanceof Error) message = error.message;
 
-  return message;
+  if (error instanceof Error && error.message === DUPLICATED_EMAIL_ERROR)
+    statusCode = StatusCode.Duplicated;
+
+  return { message, statusCode };
 };
 
 const delay = (ms: number) => {

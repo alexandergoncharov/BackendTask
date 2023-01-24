@@ -3,7 +3,7 @@ import { AuthorResponse, ProfileRespons, QuoteRepsonse } from "./types";
 
 export const toAuthtorResponse = (author: Author): AuthorResponse => {
   const responseAuthor: AuthorResponse = {
-    authorId: author.authorId,
+    authorId: author.id,
     name: author.name,
   };
 
@@ -12,7 +12,7 @@ export const toAuthtorResponse = (author: Author): AuthorResponse => {
 
 export const toQuoteRepsonse = (quote: Quote): QuoteRepsonse => {
   const quoteRepsonse: QuoteRepsonse = {
-    authorId: quote.author.authorId,
+    authorId: quote.author.id,
     quoteId: quote.quoteId,
     quote: quote.quote,
   };
