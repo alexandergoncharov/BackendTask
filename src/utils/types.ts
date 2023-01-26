@@ -30,3 +30,12 @@ export interface QuoteRepsonse {
   quoteId: number;
   quote: string;
 }
+
+export interface Response {
+  data:
+    | InfoResponse
+    | TokenResponse
+    | AuthorResponse
+    | ProfileRespons
+    | QuoteRepsonse;
+}
