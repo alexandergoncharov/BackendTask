@@ -10,6 +10,6 @@ describe("Public info api", () => {
   it("/info should return information for main page", async () => {
     const infoResponse = await app.get("/info").expect(200);
 
-    expect(infoResponse.body.info).to.equal(INFO_MESSAGE);
+    expect(infoResponse.body.data.info).to.equal(INFO_MESSAGE);
   });
 });

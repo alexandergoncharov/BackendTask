@@ -40,7 +40,7 @@ describe("Author api", () => {
 
       try {
         const response = await app.get(`/author?token=${token}`).expect(200);
-        const responseAuthor = response.body;
+        const responseAuthor = response.body.data;
 
         const allAuthors = await getAllAuthors();
 

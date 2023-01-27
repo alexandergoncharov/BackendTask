@@ -12,23 +12,22 @@ import {
   UNKNOW_ERROR,
   VALIDATION_ERROR,
 } from "../utils/const";
-import {
-  AuthorResponse,
-  InfoResponse,
-  ProfileRespons,
-  QuoteRepsonse,
-} from "../utils/types";
+import { Response } from "../utils/types";
 import { User } from "../models/user";
 import {
+  getEmptyResponse,
   toAuthtorResponse,
+  toFailedResponse,
+  toInfoResponse,
   toProfileResponse,
   toQuoteRepsonse,
+  toTokenResponse,
 } from "../utils/convertor";
 
 const router = express.Router();
 
 router.get("/info", async (req, res) => {
-  const infoResponse: InfoResponse = { info: INFO_MESSAGE };
+  const infoResponse: Response = toInfoResponse(INFO_MESSAGE);
 
   return res.send(infoResponse);
 });
@@ -48,12 +47,13 @@ router.get("/author", async (req, res) => {
     await delay(DELAY_IN_MS);
 
     const author: Author = await getRandomAuthor();
-    const responseAuthor: AuthorResponse = toAuthtorResponse(author);
+    const response: Response = toAuthtorResponse(author);
 
-    return res.send(responseAuthor);
+    return res.send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -76,12 +76,13 @@ router.get("/quote", async (req, res) => {
     await delay(DELAY_IN_MS);
 
     const quote: Quote = await getRandomQuote(authorId);
-    const quoteRepsonse: QuoteRepsonse = toQuoteRepsonse(quote);
+    const repsonse: Response = toQuoteRepsonse(quote);
 
-    return res.send(quoteRepsonse);
+    return res.send(repsonse);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -98,10 +99,13 @@ router.post("/register", async (req, res) => {
       password,
     });
 
-    return res.sendStatus(StatusCode.Successful);
+    const response: Response = getEmptyResponse();
+
+    return res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -117,10 +121,13 @@ router.post("/login", async (req, res) => {
       password,
     });
 
-    return res.status(StatusCode.Successful).send({ token });
+    const tokenResponse: Response = toTokenResponse(token);
+
+    return res.status(StatusCode.Successful).send(tokenResponse);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -137,12 +144,13 @@ router.get("/profile", async (req, res) => {
       return res.status(403).send(VALIDATION_ERROR);
     }
 
-    const profileResponse: ProfileRespons = toProfileResponse(user);
+    const response: Response = toProfileResponse(user);
 
-    res.status(StatusCode.Successful).send(profileResponse);
+    res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -160,10 +168,13 @@ router.delete("/logout", async (req, res) => {
 
     await logout(token);
 
-    res.sendStatus(StatusCode.Successful);
+    const response: Response = getEmptyResponse();
+
+    res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
