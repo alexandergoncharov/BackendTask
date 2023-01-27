@@ -61,3 +61,14 @@ const toResponse = (
 
   return response;
 };
+
+export const toFailedResponse = (message: string): Response => {
+  const failedResponse: Response = {
+    success: false,
+    data: {
+      message,
+    },
+  };
+
+  return failedResponse;
+};

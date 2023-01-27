@@ -31,6 +31,10 @@ export interface QuoteRepsonse {
   quote: string;
 }
 
+export interface ErrorMessageResponse {
+  message: string;
+}
+
 export interface Response {
   success: boolean;
   data:
@@ -39,5 +43,6 @@ export interface Response {
     | AuthorResponse
     | ProfileRespons
     | QuoteRepsonse
+    | ErrorMessageResponse
     | {};
 }

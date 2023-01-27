@@ -17,6 +17,7 @@ import { User } from "../models/user";
 import {
   getEmptyResponse,
   toAuthtorResponse,
+  toFailedResponse,
   toInfoResponse,
   toProfileResponse,
   toQuoteRepsonse,
@@ -51,7 +52,8 @@ router.get("/author", async (req, res) => {
     return res.send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -79,7 +81,8 @@ router.get("/quote", async (req, res) => {
     return res.send(repsonse);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -101,7 +104,8 @@ router.post("/register", async (req, res) => {
     return res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -122,7 +126,8 @@ router.post("/login", async (req, res) => {
     return res.status(StatusCode.Successful).send(tokenResponse);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -144,7 +149,8 @@ router.get("/profile", async (req, res) => {
     res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
@@ -167,7 +173,8 @@ router.delete("/logout", async (req, res) => {
     res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
-    return res.status(statusCode).send(message);
+    const failedResponse: Response = toFailedResponse(message);
+    return res.status(statusCode).send(failedResponse);
   }
 });
 
