@@ -15,6 +15,7 @@ import {
 import { Response } from "../utils/types";
 import { User } from "../models/user";
 import {
+  getEmptyResponse,
   toAuthtorResponse,
   toInfoResponse,
   toProfileResponse,
@@ -94,7 +95,9 @@ router.post("/register", async (req, res) => {
       password,
     });
 
-    return res.sendStatus(StatusCode.Successful);
+    const response: Response = getEmptyResponse();
+
+    return res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
     return res.status(statusCode).send(message);
@@ -156,7 +159,9 @@ router.delete("/logout", async (req, res) => {
 
     await logout(token);
 
-    res.sendStatus(StatusCode.Successful);
+    const response: Response = getEmptyResponse();
+
+    res.status(StatusCode.Successful).send(response);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
     return res.status(statusCode).send(message);

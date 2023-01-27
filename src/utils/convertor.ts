@@ -41,10 +41,14 @@ export const toProfileResponse = (user: User): Response => {
   return toResponse(profileResponse);
 };
 
+export const getEmptyResponse = (): Response => {
+  return toResponse({});
+}
+
 const toResponse = (
-  data: ProfileRespons | QuoteRepsonse | AuthorResponse | InfoResponse
+  data: ProfileRespons | QuoteRepsonse | AuthorResponse | InfoResponse | {}
 ): Response => {
-  const response: Response = { data };
+  const response: Response = { success: true, data };
 
   return response;
 };

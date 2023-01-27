@@ -32,10 +32,12 @@ export interface QuoteRepsonse {
 }
 
 export interface Response {
+  success: boolean;
   data:
     | InfoResponse
     | TokenResponse
     | AuthorResponse
     | ProfileRespons
-    | QuoteRepsonse;
+    | QuoteRepsonse
+    | {};
 }
