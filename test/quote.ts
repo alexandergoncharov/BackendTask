@@ -49,7 +49,7 @@ describe("Author api", () => {
         const response = await app
           .get(`/quote?token=${token}&authorId=${author.id}`)
           .expect(200);
-        const quoteResponse: QuoteRepsonse = response.body;
+        const quoteResponse: QuoteRepsonse = response.body.data;
 
         const allQuotes = [quote1, quote2];
         const isQuoteExists = allQuotes.some(

@@ -64,10 +64,7 @@ describe("User api", () => {
         .send({ email: testUser.email, password: decryptedPassword })
         .expect(200);
 
-      console.log(loginResponse.body);
-
-      expect(loginResponse.body).to.exist;
-      const token: string = loginResponse.body.token;
+      const token: string = loginResponse.body.data.token;
       expect(token).to.exist;
 
       await app.get(`/profile?token=${token}`).expect(200);
@@ -102,8 +99,8 @@ describe("User api", () => {
       it("should return user profile ", async () => {
         const response = await app.get(`/profile?token=${token}`).expect(200);
 
-        expect(response.body.fullname).to.equal(user.fullname);
-        expect(response.body.email).to.equal(user.email);
+        expect(response.body.data.fullname).to.equal(user.fullname);
+        expect(response.body.data.email).to.equal(user.email);
       });
     });
   });
