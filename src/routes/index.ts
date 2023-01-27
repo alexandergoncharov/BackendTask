@@ -20,6 +20,7 @@ import {
   toInfoResponse,
   toProfileResponse,
   toQuoteRepsonse,
+  toTokenResponse,
 } from "../utils/convertor";
 
 const router = express.Router();
@@ -116,7 +117,9 @@ router.post("/login", async (req, res) => {
       password,
     });
 
-    return res.status(StatusCode.Successful).send({ token });
+    const tokenResponse: Response = toTokenResponse(token);
+
+    return res.status(StatusCode.Successful).send(tokenResponse);
   } catch (error) {
     const { message, statusCode } = handleErrorMessage(error as Error);
     return res.status(statusCode).send(message);

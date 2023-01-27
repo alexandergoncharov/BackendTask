@@ -5,6 +5,7 @@ import {
   ProfileRespons,
   QuoteRepsonse,
   InfoResponse,
+  TokenResponse,
 } from "./types";
 
 export const toInfoResponse = (infoMessage: string): Response => {
@@ -41,9 +42,17 @@ export const toProfileResponse = (user: User): Response => {
   return toResponse(profileResponse);
 };
 
+export const toTokenResponse = (token: string): Response => {
+  const tokenResponse: TokenResponse = {
+    token,
+  };
+
+  return toResponse(tokenResponse);
+};
+
 export const getEmptyResponse = (): Response => {
   return toResponse({});
-}
+};
 
 const toResponse = (
   data: ProfileRespons | QuoteRepsonse | AuthorResponse | InfoResponse | {}
